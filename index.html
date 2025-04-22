@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ratão Bet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Fredoka One', cursive;
+      background: #f2f2f2;
+      color: #333;
+    }
+    
+    /* Cabeçalho com logo */
+    .header-container {
+      display: flex;
+      align-items: center;
+      background: #ffcc00;
+      padding: 10px 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-right: 15px;
+    }
+    
+    .title-slogan {
+      text-align: left;
+    }
+    
+    .title {
+      font-size: 1.5em;
+      margin: 0;
+      color: #222;
+    }
+    
+    .slogan {
+      font-size: 0.7em;
+      margin: 0;
+      color: #555;
+    }
+    
+    /* Corpo do site */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+    
+    .roleta {
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      font-family: 'Fredoka One', cursive;
+    }
+    
+    button {
+      background: #00cc66;
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      font-size: 1em;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Fredoka One', cursive;
+    }
+    
+    button:hover {
+      background: #00994d;
+      transform: scale(1.05);
+    }
+    
+    .resultado {
+      font-size: 1.2em;
+      margin: 20px 0;
+      min-height: 50px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    
+    .ranking {
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    #listaRanking {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    #listaRanking li {
+      padding: 8px 0;
+      border-bottom: 1px dashed #eee;
+    }
+    
+    /* Rodapé */
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      background: #222;
+      color: #fff;
+      font-size: 0.8em;
+    }
+    
+    .instagram-link {
+      color: #ffcc00;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .instagram-link:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+    
+    /* Responsivo */
+    @media (max-width: 600px) {
+      .header-container {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .logo {
+        margin: 0 auto 10px;
+      }
+      
+      .title-slogan {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <img src="https://i.ibb.co/SDqFMYGT/Photoroom-20250421-200755.png" alt="Logo Ratão Bet" class="logo">
+    <div class="title-slogan">
+      <h1 class="title">Ratão Bet</h1>
+      <p class="slogan">Onde o azar é garantido!</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="roleta">
+      <p>Digite seu nome e clique para jogar:</p>
+      <input type="text" id="nomeJogador" placeholder="Seu nome ou apelido">
+      <button onclick="girarRoleta()">Girar Roleta</button>
+      <div class="resultado" id="resultado"></div>
+    </div>
+
+    <div class="ranking">
+      <h2>Ranking dos Jogadores</h2>
+      <ul id="listaRanking"></ul>
+    </div>
+  </div>
+
+  <footer>
+    <p>Desenvolvido para zoar com os amigos. Sem fins lucrativos.</p>
+    <p>&copy; 2024 <a href="https://www.instagram.com/the_rafa_aleatory?igsh=NndhYmphOWJuMjVt" class="instagram-link" target="_blank">Ratão</a></p>
+  </footer>
+
+  <script>
+    // Configurações
+    const SHEETDB_API = "https://sheetdb.io/api/v1/tm9q9oq1wejsq";
+    const resultados = [
+      "Você ganhou um queijo imaginário!",
+      "Ratão levou tudo, tente amanhã!",
+      "Empatou com o Kauanzinho, o rei do azar!",
+      "Hoje a sorte está com você! Mais ou menos...",
+      "Você desbloqueou o modo perdedor!",
+      "Ganhou um sorriso do Ratão!"
+    ];
+
+    // Gerar ID único
+    function gerarIdUnico() {
+      return 'id-' + Math.random().toString(36).substr(2, 9);
+    }
+
+    // Função principal
+    async function girarRoleta() {
+      const nome = document.getElementById("nomeJogador").value.trim();
+      if (!nome) {
+        alert("Digite seu nome para jogar!");
+        return;
+      }
+
+      // Animação
+      const resultadoElemento = document.getElementById("resultado");
+      resultadoElemento.textContent = "Girando...";
+      
+      // Delay para efeito
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Resultado aleatório
+      const resultado = resultados[Math.floor(Math.random() * resultados.length)];
+      resultadoElemento.textContent = resultado;
+
+      // Salvar no banco de dados
+      try {
+        // Verifica se jogador já existe
+        const respostaBusca = await fetch(`${SHEETDB_API}/search?nome=${encodeURIComponent(nome)}`);
+        const dadosExistentes = await respostaBusca.json();
+
+        if (dadosExistentes.length > 0) {
+          // Atualiza pontos se já existir
+          const jogador = dadosExistentes[0];
+          const novosPontos = parseInt(jogador.pontos || 0) + 1;
+          
+          await fetch(`${SHEETDB_API}/id/${jogador.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              data: { 
+                pontos: novosPontos,
+                ultima_jogada: new Date().toLocaleString() 
+              } 
+            })
+          });
+        } else {
+          // Cria novo jogador
+          await fetch(SHEETDB_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+              data: { 
+                id: gerarIdUnico(),
+                nome: nome, 
+                pontos: 1,
+                ultima_jogada: new Date().toLocaleString() 
+              } 
+            })
+          });
+        }
+
+        // Atualiza ranking
+        await carregarRanking();
+        
+      } catch (error) {
+        console.error("Erro ao salvar dados:", error);
+        resultadoElemento.textContent += " (Erro ao salvar pontuação)";
+      }
+    }
+
+    // Carregar ranking
+    async function carregarRanking() {
+      const lista = document.getElementById("listaRanking");
+      lista.innerHTML = "<li>Carregando...</li>";
+
+      try {
+        const resposta = await fetch(SHEETDB_API);
+        if (!resposta.ok) throw new Error("Erro na API");
+        
+        const dados = await resposta.json();
+        
+        // Ordena por pontos (maior primeiro)
+        dados.sort((a, b) => (parseInt(b.pontos) || 0) - (parseInt(a.pontos) || 0));
+
+        // Limita a 10 melhores
+        const top10 = dados.slice(0, 10);
+        
+        // Exibe na tela
+        lista.innerHTML = "";
+        if (top10.length === 0) {
+          lista.innerHTML = "<li>Nenhum jogador ainda</li>";
+        } else {
+          top10.forEach((jogador, index) => {
+            const li = document.createElement("li");
+            li.textContent = `${index + 1}. ${jogador.nome} - ${jogador.pontos || 0} pontos`;
+            lista.appendChild(li);
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao carregar ranking:", error);
+        lista.innerHTML = "<li>Erro ao carregar ranking</li>";
+      }
+    }
+
+    // Iniciar
+    document.addEventListener("DOMContentLoaded", () => {
+      carregarRanking();
+    });
+  </script>
+</body>
+</html>

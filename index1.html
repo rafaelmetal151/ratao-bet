@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ratão Bet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --amarelo: #ffcc00;
+      --verde: #00cc66;
+      --vermelho: #ff3333;
+      --roxo: #8a2be2;
+    }
+    
+    body {
+      margin: 0;
+      font-family: 'Fredoka One', cursive;
+      background: #f2f2f2;
+      color: #333;
+    }
+    
+    /* Cabeçalho */
+    .header-container {
+      display: flex;
+      align-items: center;
+      background: var(--amarelo);
+      padding: 10px 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+    
+    .logo {
+      width: 50px;
+      height: 50px;
+      margin-right: 15px;
+    }
+    
+    .title-slogan {
+      text-align: left;
+    }
+    
+    .title {
+      font-size: 1.5em;
+      margin: 0;
+      color: #222;
+    }
+    
+    .slogan {
+      font-size: 0.7em;
+      margin: 0;
+      color: #555;
+    }
+    
+    /* Área de Login */
+    .login-section {
+      max-width: 400px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .game-section {
+      display: none;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    /* Roleta Simples */
+    .roleta {
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    .roleta-ganho {
+      font-size: 2em;
+      color: var(--verde);
+      margin: 10px 0;
+      animation: pulse 0.5s 3;
+    }
+    
+    .roleta-perda {
+      font-size: 2em;
+      color: var(--vermelho);
+      margin: 10px 0;
+      animation: pulse 0.5s 3;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    /* Ranking */
+    .ranking {
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    #listaRanking {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    #listaRanking li {
+      padding: 8px 0;
+      border-bottom: 1px dashed #eee;
+    }
+    
+    /* Rodapé */
+    footer {
+      margin-top: 40px;
+      padding: 20px;
+      background: #222;
+      color: #fff;
+      font-size: 0.8em;
+      text-align: center;
+    }
+    
+    .instagram-link {
+      color: var(--amarelo);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .instagram-link:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+    
+    /* Painel de Moderação */
+    .btn-moderacao {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: var(--vermelho);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 100;
+    }
+    
+    #painelModeracao {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabeçalho -->
+  <div class="header-container">
+    <img src="https://i.ibb.co/SDqFMYGT/Photoroom-20250421-200755.png" alt="Logo Ratão Bet" class="logo">
+    <div class="title-slogan">
+      <h1 class="title">Ratão Bet</h1>
+      <p class="slogan">Onde a sorte é uma roleta!</p>
+    </div>
+  </div>
+
+  <!-- Área de Login -->
+  <div class="login-section" id="loginSection">
+    <h2>Criar Conta/Login</h2>
+    <input type="text" id="inputNome" placeholder="Escolha um nome de jogador" maxlength="20">
+    <p id="nomeErro" style="color: var(--vermelho); display: none;"></p>
+    <button onclick="validarNome()">Continuar</button>
+    <p style="font-size: 0.8em; color: #777;">Seu nome será verificado contra termos inadequados.</p>
+  </div>
+
+  <!-- Área do Jogo -->
+  <div class="game-section" id="gameSection">
+    <div class="roleta">
+      <h2>Roleta da Sorte</h2>
+      <div id="roletaResultado"></div>
+      <button id="btnGirar" onclick="girarRoleta()">Girar Roleta</button>
+      <div class="resultado" id="resultado"></div>
+      <p id="saldoAtual">Saldo atual: <strong id="pontosJogador">0</strong> pontos</p>
+    </div>
+
+    <div class="ranking">
+      <h2>Ranking dos Top 10</h2>
+      <ul id="listaRanking"></ul>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer>
+    <p>Desenvolvido para zoar com os amigos. Sem fins lucrativos.</p>
+    <p>&copy; 2024 <a href="https://www.instagram.com/the_rafa_aleatory?igsh=NndhYmphOWJuMjVt" class="instagram-link" target="_blank">Ratão</a></p>
+  </footer>
+
+  <!-- Painel de Moderação -->
+  <button class="btn-moderacao" onclick="abrirPainelModeracao()">🔧 Moderação</button>
+  <div id="painelModeracao">
+    <h3>Painel de Moderação</h3>
+    <input type="password" id="senhaModerador" placeholder="Senha de moderador">
+    <button onclick="verificarSenha()">Acessar</button>
+    <div id="ferramentasModeracao" style="display: none; margin-top: 15px;">
+      <h4>Banir Jogador</h4>
+      <input type="text" id="idJogadorBanir" placeholder="ID do Jogador">
+      <input type="text" id="motivoBan" placeholder="Motivo (opcional)">
+      <button onclick="banirJogador()">Confirmar Banimento</button>
+      <p id="statusModeracao" style="color: green;"></p>
+    </div>
+  </div>
+
+  <script>
+    // ================= CONFIGURAÇÕES =================
+    const SHEETDB_API = "https://sheetdb.io/api/v1/tm9q9oq1wejsq";
+    const SENHA_MODERADOR = "RataoMod123";
+    
+    // Valores aleatórios para a roleta (-100 a +100)
+    function gerarValorRoleta() {
+      const valores = [-50, -30, -20, -10, 10, 15, 20, 30, 40, 50];
+      return valores[Math.floor(Math.random() * valores.length)];
+    }
+
+    // ================= VARIÁVEIS GLOBAIS =================
+    let jogadorAtual = null;
+
+    // ================= FUNÇÕES PRINCIPAIS =================
+    function validarNome() {
+      const nomeInput = document.getElementById("inputNome").value.trim();
+      const erroElement = document.getElementById("nomeErro");
+      
+      if (nomeInput.length < 3) {
+        erroElement.textContent = "Nome muito curto (mínimo 3 caracteres)";
+        erroElement.style.display = "block";
+        return;
+      }
+      
+      if (nomeInput.length > 20) {
+        erroElement.textContent = "Nome muito longo (máximo 20 caracteres)";
+        erroElement.style.display = "block";
+        return;
+      }
+      
+      // Verificação de termos proibidos (simplificada)
+      const termosProibidos = ["cu", "buceta", "caralho", "porra", "fuder", "pau", "puta", "viado"];
+      if (termosProibidos.some(termo => nomeInput.toLowerCase().includes(termo))) {
+        erroElement.textContent = "Nome contém termos inadequados";
+        erroElement.style.display = "block";
+        return;
+      }
+      
+      erroElement.style.display = "none";
+      criarSessaoJogador(nomeInput);
+    }
+
+    async function criarSessaoJogador(nome) {
+      try {
+        // Verifica se jogador já existe
+        const resposta = await fetch(`${SHEETDB_API}/search?nome=${encodeURIComponent(nome)}`);
+        const dados = await resposta.json();
+        
+        if (dados.length > 0) {
+          // Verifica banimento
+          if (dados[0].banido === "sim") {
+            alert(`🚫 VOCÊ ESTÁ BANIDO!\nMotivo: ${dados[0].motivo_ban || "Violação das regras"}`);
+            return;
+          }
+          jogadorAtual = dados[0];
+        } else {
+          // Novo jogador
+          const novoJogador = {
+            id: 'id-' + Math.random().toString(36).substr(2, 9),
+            nome: nome,
+            pontos: 0,
+            ultima_jogada: new Date().toISOString(),
+            banido: "não"
+          };
+          
+          await fetch(SHEETDB_API, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: novoJogador })
+          });
+          
+          jogadorAtual = novoJogador;
+        }
+        
+        // Inicia sessão
+        sessionStorage.setItem('rataoBetJogadorId', jogadorAtual.id);
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("gameSection").style.display = "block";
+        document.getElementById("pontosJogador").textContent = jogadorAtual.pontos || 0;
+        carregarRanking();
+        
+      } catch (error) {
+        console.error("Erro ao criar sessão:", error);
+        alert("Erro ao criar conta. Tente novamente.");
+      }
+    }
+
+    async function girarRoleta() {
+      if (!jogadorAtual) return;
+      
+      const btnGirar = document.getElementById("btnGirar");
+      const resultadoElemento = document.getElementById("resultado");
+      const roletaDisplay = document.getElementById("roletaResultado");
+      
+      btnGirar.disabled = true;
+      resultadoElemento.textContent = "Girando...";
+      roletaDisplay.innerHTML = "🎰";
+      
+      // Efeito de giro (3 segundos)
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Resultado aleatório
+      const pontos = gerarValorRoleta();
+      const novosPontos = Math.max(0, (jogadorAtual.pontos || 0) + pontos);
+      
+      // Atualiza pontos
+      await fetch(`${SHEETDB_API}/id/${encodeURIComponent(jogadorAtual.id)}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          data: { 
+            pontos: novosPontos,
+            ultima_jogada: new Date().toISOString() 
+          } 
+        })
+      });
+      
+      // Atualiza interface
+      jogadorAtual.pontos = novosPontos;
+      document.getElementById("pontosJogador").textContent = novosPontos;
+      
+      // Exibe resultado
+      if (pontos > 0) {
+        roletaDisplay.innerHTML = `<div class="roleta-ganho">+${pontos} pontos!</div>`;
+        resultadoElemento.innerHTML = `<strong>🎉 Parabéns! Você ganhou ${pontos} pontos!</strong>`;
+      } else {
+        roletaDisplay.innerHTML = `<div class="roleta-perda">${pontos} pontos</div>`;
+        resultadoElemento.innerHTML = `<strong>💸 Que pena! Você perdeu ${Math.abs(pontos)} pontos...</strong>`;
+      }
+      
+      // Atualiza ranking e libera o botão
+      carregarRanking();
+      btnGirar.disabled = false;
+    }
+
+    // ================= SISTEMA DE RANKING =================
+    async function carregarRanking() {
+      const lista = document.getElementById("listaRanking");
+      lista.innerHTML = "<li>Carregando...</li>";
+      
+      try {
+        const resposta = await fetch(SHEETDB_API);
+        const dados = await resposta.json();
+        
+        // Filtra jogadores não-banidos e ordena por pontos
+        const jogadoresAtivos = dados.filter(jogador => jogador.banido !== "sim");
+        jogadoresAtivos.sort((a, b) => (parseInt(b.pontos) || 0) - (parseInt(a.pontos) || 0));
+        
+        // Exibe apenas os top 10
+        lista.innerHTML = "";
+        if (jogadoresAtivos.length === 0) {
+          lista.innerHTML = "<li>Nenhum jogador ainda</li>";
+        } else {
+          jogadoresAtivos.slice(0, 10).forEach((jogador, index) => {
+            const li = document.createElement("li");
+            li.textContent = `${index + 1}. ${jogador.nome} - ${jogador.pontos || 0} pontos`;
+            if (jogador.id === jogadorAtual?.id) {
+              li.style.fontWeight = "bold";
+              li.style.color = "var(--verde)";
+            }
+            lista.appendChild(li);
+          });
+        }
+      } catch (error) {
+        console.error("Erro ao carregar ranking:", error);
+        lista.innerHTML = "<li>Erro ao carregar ranking</li>";
+      }
+    }
+
+    // ================= SISTEMA DE MODERAÇÃO =================
+    function abrirPainelModeracao() {
+      document.getElementById("painelModeracao").style.display = "block";
+    }
+
+    function verificarSenha() {
+      const senhaInserida = document.getElementById("senhaModerador").value;
+      if (senhaInserida === SENHA_MODERADOR) {
+        document.getElementById("ferramentasModeracao").style.display = "block";
+        document.getElementById("statusModeracao").textContent = "Acesso concedido!";
+      } else {
+        alert("Senha incorreta!");
+      }
+    }
+
+    async function banirJogador() {
+      const idJogador = document.getElementById("idJogadorBanir").value.trim();
+      const motivo = document.getElementById("motivoBan").value.trim() || "Violação das regras";
+      
+      if (!idJogador) {
+        alert("Digite o ID do jogador!");
+        return;
+      }
+      
+      try {
+        // Verifica se o jogador existe
+        const response = await fetch(`${SHEETDB_API}/search?id=${encodeURIComponent(idJogador)}`);
+        const dados = await response.json();
+        
+        if (dados.length === 0) {
+          document.getElementById("statusModeracao").textContent = "Jogador não encontrado!";
+          return;
+        }
+        
+        // Atualiza para banido
+        await fetch(`${SHEETDB_API}/id/${encodeURIComponent(idJogador)}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            data: {
+              banido: "sim",
+              motivo_ban: motivo.substring(0, 100)
+            }
+          })
+        });
+        
+        document.getElementById("statusModeracao").textContent = `Jogador ${idJogador} banido com sucesso!`;
+        
+        // Se o jogador banido estiver logado, força logout
+        if (jogadorAtual && jogadorAtual.id === idJogador) {
+          sessionStorage.removeItem('rataoBetJogadorId');
+          location.reload();
+        }
+        
+      } catch (error) {
+        console.error("Erro ao banir:", error);
+        document.getElementById("statusModeracao").textContent = "Erro ao banir jogador";
+      }
+    }
+
+    // ================= INICIALIZAÇÃO =================
+    document.addEventListener("DOMContentLoaded", () => {
+      // Tenta recuperar sessão existente
+      const jogadorId = sessionStorage.getItem('rataoBetJogadorId');
+      if (jogadorId) {
+        fetch(`${SHEETDB_API}/search?id=${encodeURIComponent(jogadorId)}`)
+          .then(res => res.json())
+          .then(dados => {
+            if (dados.length > 0 && dados[0].banido !== "sim") {
+              jogadorAtual = dados[0];
+              document.getElementById("loginSection").style.display = "none";
+              document.getElementById("gameSection").style.display = "block";
+              document.getElementById("pontosJogador").textContent = jogadorAtual.pontos || 0;
+              carregarRanking();
+            }
+          });
+      }
+    });
+  </script>
+</body>
+</html>
